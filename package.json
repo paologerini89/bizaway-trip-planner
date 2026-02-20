@@ -23,12 +23,15 @@
   },
   "homepage": "https://github.com/paologerini89/bizaway-trip-planner#readme",
   "dependencies": {
+    "@fastify/cors": "^10.0.1",
+    "@sinclair/typebox": "^0.34.48",
+    "axios": "^1.13.5",
     "dotenv": "^17.3.1",
     "fastify": "^5.7.4",
-    "@fastify/cors": "^10.0.1",
     "uuid": "^11.0.3"
   },
   "devDependencies": {
+    "@types/axios": "^0.9.36",
     "@types/node": "^22.9.3",
     "@types/uuid": "^10.0.0",
     "@typescript-eslint/eslint-plugin": "^8.16.0",

@@ -1,0 +1,1 @@
+export const OK_CODE = 200;
