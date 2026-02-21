@@ -3,6 +3,7 @@ import { config } from 'dotenv';
 import cors from '@fastify/cors';
 import { tripRoutes } from './routes/trips';
 import { TripService } from './services/tripService';
+import { buildErrorResponse, INTERNAL_SERVER_ERROR_CODE, INTERNAL_SERVER_ERROR_CODE_MESSAGE, SERVICE_UNAVAILABLE_CODE } from './utils/errors';
 
 config();
 
@@ -16,43 +17,45 @@ fastify.register(cors, {
     allowedHeaders: ['Content-Type', 'Authorization']
 });
 
-fastify.setErrorHandler((error: Error, request, reply) => {
+fastify.setErrorHandler((error: any, request, reply) => {
     fastify.log.error(error);
-    reply.status(500).send({
-        error: 'Internal Server Error',
-        message: process.env.NODE_ENV === 'development' ? error.message : 'Something went wrong',
-        timestamp: new Date().toISOString()
-    });
+    
+	// da axios
+    if (error.response) {
+        const code = error.response.status;
+        const statusText = error.response.statusText;
+        const responseMessage = error.response.data?.msg || error.response.data?.error || '';
+
+		const errorResponse = buildErrorResponse({ code, message: responseMessage });
+        
+        return reply.status(code).send(errorResponse);
+    }
+    
+    if (error.request) {
+		return reply.status(SERVICE_UNAVAILABLE_CODE).send(buildErrorResponse({ code: SERVICE_UNAVAILABLE_CODE }));
+    }
+    
+    return reply.status(INTERNAL_SERVER_ERROR_CODE).send(buildErrorResponse({ code: INTERNAL_SERVER_ERROR_CODE, error }));
+
 });
 
 const apiUrl = process.env.TRIPS_API_ENDPOINT;
 if (!apiUrl) {
-	console.error('TRIPS_API_ENDPOINT environment variable is required');
+	fastify.log.error('TRIPS_API_ENDPOINT environment variable is required');
 	process.exit(1);
 }
 
 const apiKey = process.env.TRIPS_API_KEY;
 if (!apiKey) {
-	console.error('TRIPS_API_KEY environment variable is required');
+	fastify.log.error('TRIPS_API_KEY environment variable is required');
 	process.exit(1);
 }
 
 const tripService = new TripService(apiUrl, apiKey);
 
-// Register routes
 fastify.register(tripRoutes, { tripService });
 
-// Health check endpoint (non richiede autenticazione)
-fastify.get('/health', async (request, reply) => {
-	return reply.send({
-		status: 'healthy',
-		timestamp: new Date().toISOString(),
-		version: '1.0.0',
-		authentication: 'enabled'
-	});
-});
-
-const start = async (): Promise<void> => {
+const startServer = async (): Promise<void> => {
 	try {
 		const port = parseInt(process.env.PORT || '3000', 10);
 		const host = process.env.HOST || '0.0.0.0';
@@ -65,5 +68,4 @@ const start = async (): Promise<void> => {
 	}
 };
 
-// Start the server
-start();
+startServer();

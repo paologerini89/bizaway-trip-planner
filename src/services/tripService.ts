@@ -17,35 +17,20 @@ export class TripService {
 	}		
 
 	private async getTripsFromRemoteAPI(origin: string, destination: string): Promise<Trip[]> {
-		try {
-			const normalizedOrigin = origin.toUpperCase();
-			const normalizedDestination = destination.toUpperCase();
+		const normalizedOrigin = origin.toUpperCase();
+		const normalizedDestination = destination.toUpperCase();
 
-			const endpoint = `${this.apiUrl}?origin=${normalizedOrigin}&destination=${normalizedDestination}`;
+		// const endpoint = `${this.apiUrl}?origin=${normalizedOrigin}&destination=${normalizedDestination}`;
+		const endpoint = `${this.apiUrl}?origin=${normalizedOrigin}`;
 
-			const response = await axios.get<Trip[]>(endpoint, {
-				headers: {
-					'x-api-key': this.apiKey,
-					'Content-Type': 'application/json'
-				}
-			});
-
-			return response.data;
-		} catch (error: any) {
-			if (error.response) {
-				// Errore dalla risposta del server
-				const status = error.response.status || 'Unknown';
-				const statusText = error.response.statusText || 'Unknown Error';
-				throw new Error(`Failed to fetch trips: ${status} ${statusText}`);
-			} 
-			if (error.request) {
-				// Errore di rete (nessuna risposta ricevuta)
-				throw new Error('Failed to fetch trips: Network error - no response received');
+		const response = await axios.get<Trip[]>(endpoint, {
+			headers: {
+				'x-api-key': this.apiKey,
+				'Content-Type': 'application/json'
 			}
+		});
 
-			// Altro tipo di errore
-			throw new Error(`Failed to fetch trips: ${error.message || 'Unknown error'}`);  
-		}
+		return response.data;
 	}
 
 	/**
@@ -69,44 +54,24 @@ export class TripService {
 
 		switch (sortBy) {
 			case 'fastest':
-			return sortedTrips.sort((a, b) => a.duration - b.duration);
+				return sortedTrips.sort((a, b) => a.duration - b.duration);
 			case 'cheapest':
-			return sortedTrips.sort((a, b) => a.cost - b.cost);
+				return sortedTrips.sort((a, b) => a.cost - b.cost);
 			default:
-			return sortedTrips;
+				return sortedTrips;
 		}
 	}
 
 	async searchTrips(origin: string, destination: string, sortBy: SortBy): Promise<Trip[]> {
-		// Validate IATA codes
-		if (!isValidPlaceCode(origin)) {
-			throw new Error(`Invalid origin IATA code: ${origin}`);
-		}
+		// Fetch all trips from API
+		const allTrips = await this.getTripsFromRemoteAPI(origin, destination);
+		
+		// Filter trips by origin and destination
+		const filteredTrips = this.filterTrips(allTrips, origin, destination);
+		
+		// Sort trips based on strategy
+		const sortedTrips = this.sortTrips(filteredTrips, sortBy);
 
-		if (!isValidPlaceCode(destination)) {
-			throw new Error(`Invalid destination IATA code: ${destination}`);
-		}
-
-		if (origin.toUpperCase() === destination.toUpperCase()) {
-			throw new Error('Origin and destination cannot be the same');
-		}
-
-		try {
-			// Fetch all trips from API
-			const allTrips = await this.getTripsFromRemoteAPI(origin, destination);
-			
-			// Filter trips by origin and destination
-			const filteredTrips = this.filterTrips(allTrips, origin, destination);
-			
-			// Sort trips based on strategy
-			const sortedTrips = this.sortTrips(filteredTrips, sortBy);
-
-			return sortedTrips;
-		} catch (error) {
-			if (error instanceof Error) {
-			throw error;
-			}
-			throw new Error('Failed to search trips');
-		}
+		return sortedTrips;
 	}
 }

@@ -10,6 +10,10 @@ export const INTERNAL_SERVER_ERROR_CODE = 500;
 export const INTERNAL_SERVER_ERROR_CODE_MESSAGE = 'Internal Server Error';
 export const INTERNAL_SERVER_ERROR_MESSAGE = 'An unexpected error occurred';
 
+export const SERVICE_UNAVAILABLE_CODE = 503;
+export const SERVICE_UNAVAILABLE_CODE_MESSAGE = 'Service Unavailable';
+export const SERVICE_UNAVAILABLE_MESSAGE = 'Unable to reach the API';
+
 
 const errors: Record<number, { error: string; message: string }> = {
     [BAD_REQUEST_CODE]: {
@@ -23,12 +27,16 @@ const errors: Record<number, { error: string; message: string }> = {
     [INTERNAL_SERVER_ERROR_CODE]: {
         error: INTERNAL_SERVER_ERROR_CODE_MESSAGE,
         message: INTERNAL_SERVER_ERROR_MESSAGE
+    },
+    [SERVICE_UNAVAILABLE_CODE]: {
+        error: SERVICE_UNAVAILABLE_CODE_MESSAGE,
+        message: SERVICE_UNAVAILABLE_MESSAGE
     }
 }
 
-export const buildErrorResponse = ({ code, error = null, defaultMessage = '' }: { code: number, error?: any, defaultMessage?: string }) => {
+export const buildErrorResponse = ({ code, error = null, message = '' }: { code: number, error?: any, message?: string }) => {
     const errorCodeMessage = errors[code]?.error || 'Unknown Error';
-    const errorMessage = defaultMessage || errors[code]?.message || 'An unexpected error occurred';
+    const errorMessage = message || errors[code]?.message || 'An unexpected error occurred';
     return {
         error: errorCodeMessage,
         message: error instanceof Error ? error.message || errorMessage : errorMessage,

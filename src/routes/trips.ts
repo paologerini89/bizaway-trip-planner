@@ -7,8 +7,8 @@ import {
 import { TripService } from '../services/tripService';
 import { authMiddleware } from '../middleware/auth';
 import { BadRequestResponseSchema, InternalServerErrorResponseSchema, UnauthorizedResponseSchema } from '../types/errors';
-import { BAD_REQUEST_CODE, buildErrorResponse, INTERNAL_SERVER_ERROR_CODE } from '../utils/errors';
 import { OK_CODE } from '../utils/common';
+import { searchMiddleware } from '../middleware/search';
 
 interface TripRouteOptions {
     tripService: TripService;
@@ -27,13 +27,7 @@ export async function tripRoutes(fastify: FastifyInstance, options: TripRouteOpt
     fastify.get<{
         Querystring: SearchRequest
     }>('/trips/search', {
-        preHandler: [authMiddleware, async (request, reply) => {
-            const { origin, destination, sort_by } = request.query;
-            if (!origin || !destination || !sort_by) {
-                const message = 'Missing required query parameters: origin, destination, sort_by';
-                return reply.code(BAD_REQUEST_CODE).send(buildErrorResponse({ code: BAD_REQUEST_CODE, defaultMessage: message }));
-            }
-        }],
+        preHandler: [authMiddleware, searchMiddleware],
         schema: {
             querystring: SearchRequestSchema,
             response: {
@@ -59,8 +53,9 @@ export async function tripRoutes(fastify: FastifyInstance, options: TripRouteOpt
                 total_results: trips.length
             });
         } catch (error: any) {
-            const defaultMessage = 'Failed to search trips';
-            return reply.code(INTERNAL_SERVER_ERROR_CODE).send(buildErrorResponse({ code: INTERNAL_SERVER_ERROR_CODE, error, defaultMessage }));
+            console.error('Error searching trips:', error);
+            // Lancia l'errore originale che sarà gestito dal setErrorHandler
+            throw error;
         }
     });
 }
