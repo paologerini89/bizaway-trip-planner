@@ -1,4 +1,4 @@
-import { Trip, SortBy, isValidPlaceCode } from '../types/trips';
+import { Trip, SortBy } from '../types/trips';
 import axios from 'axios';
 
 export class TripService {
@@ -20,8 +20,7 @@ export class TripService {
 		const normalizedOrigin = origin.toUpperCase();
 		const normalizedDestination = destination.toUpperCase();
 
-		// const endpoint = `${this.apiUrl}?origin=${normalizedOrigin}&destination=${normalizedDestination}`;
-		const endpoint = `${this.apiUrl}?origin=${normalizedOrigin}`;
+		const endpoint = `${this.apiUrl}?origin=${normalizedOrigin}&destination=${normalizedDestination}`;
 
 		const response = await axios.get<Trip[]>(endpoint, {
 			headers: {
@@ -33,22 +32,6 @@ export class TripService {
 		return response.data;
 	}
 
-	/**
-	 * Filters trips by origin and destination
-	 */
-	private filterTrips(trips: Trip[], origin: string, destination: string): Trip[] {
-		const normalizedOrigin = origin.toUpperCase();
-		const normalizedDestination = destination.toUpperCase();
-
-		return trips.filter(trip => 
-			trip.origin.toUpperCase() === normalizedOrigin && 
-			trip.destination.toUpperCase() === normalizedDestination
-		);
-	}
-
-	/**
-	 * Sorts trips based on the sorting strategy
-	 */
 	private sortTrips(trips: Trip[], sortBy: SortBy): Trip[] {
 		const sortedTrips = [...trips];
 
@@ -63,14 +46,9 @@ export class TripService {
 	}
 
 	async searchTrips(origin: string, destination: string, sortBy: SortBy): Promise<Trip[]> {
-		// Fetch all trips from API
-		const allTrips = await this.getTripsFromRemoteAPI(origin, destination);
+		const trips = await this.getTripsFromRemoteAPI(origin, destination);
 		
-		// Filter trips by origin and destination
-		const filteredTrips = this.filterTrips(allTrips, origin, destination);
-		
-		// Sort trips based on strategy
-		const sortedTrips = this.sortTrips(filteredTrips, sortBy);
+		const sortedTrips = this.sortTrips(trips, sortBy);
 
 		return sortedTrips;
 	}
