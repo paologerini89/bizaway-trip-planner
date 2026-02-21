@@ -6,7 +6,7 @@ import {
 } from '../types/trips';
 import { TripService } from '../services/tripService';
 import { authMiddleware } from '../middleware/auth';
-import { BadRequestResponseSchema, InternalServerErrorResponseSchema, UnauthorizedResponseSchema } from '../types/errors';
+import { GenericErrorResponseSchemas } from '../types/errors';
 import { OK_CODE } from '../utils/common';
 import { searchMiddleware } from '../middleware/search';
 
@@ -31,10 +31,8 @@ export async function tripRoutes(fastify: FastifyInstance, options: TripRouteOpt
         schema: {
             querystring: SearchRequestSchema,
             response: {
+                ...GenericErrorResponseSchemas,
                 200: SearchResponseSchema,
-                400: BadRequestResponseSchema,
-                401: UnauthorizedResponseSchema,
-                500: InternalServerErrorResponseSchema,
             }
         }
     }, async (request: FastifyRequest<{ Querystring: SearchRequest }>, reply: FastifyReply) => {
@@ -53,8 +51,7 @@ export async function tripRoutes(fastify: FastifyInstance, options: TripRouteOpt
                 total_results: trips.length
             });
         } catch (error: any) {
-            console.error('Error searching trips:', error);
-            // Lancia l'errore originale che sarà gestito dal setErrorHandler
+            fastify.log.error('Error searching trips:', error);
             throw error;
         }
     });

@@ -6,6 +6,14 @@ export const UNAUTHORIZED_CODE = 401;
 export const UNAUTHORIZED_CODE_MESSAGE = 'Unauthorized';
 export const UNAUTHORIZED_ERROR_MESSAGE = 'Authorization header is required and must be valid';
 
+export const NOT_FOUND_CODE = 404;
+export const NOT_FOUND_CODE_MESSAGE = 'Not Found';
+export const NOT_FOUND_ERROR_MESSAGE = 'The requested resource was not found';
+
+export const CONFLICT_CODE = 409;
+export const CONFLICT_CODE_MESSAGE = 'Conflict';
+export const CONFLICT_ERROR_MESSAGE = 'The resource already exists';
+
 export const INTERNAL_SERVER_ERROR_CODE = 500;
 export const INTERNAL_SERVER_ERROR_CODE_MESSAGE = 'Internal Server Error';
 export const INTERNAL_SERVER_ERROR_MESSAGE = 'An unexpected error occurred';
@@ -23,6 +31,14 @@ const errors: Record<number, { error: string; message: string }> = {
     [UNAUTHORIZED_CODE]: {
         error: UNAUTHORIZED_CODE_MESSAGE,
         message: UNAUTHORIZED_ERROR_MESSAGE
+    },
+    [NOT_FOUND_CODE]: {
+        error: NOT_FOUND_CODE_MESSAGE,
+        message: NOT_FOUND_ERROR_MESSAGE
+    },
+    [CONFLICT_CODE]: {
+        error: CONFLICT_CODE_MESSAGE,
+        message: CONFLICT_ERROR_MESSAGE
     },
     [INTERNAL_SERVER_ERROR_CODE]: {
         error: INTERNAL_SERVER_ERROR_CODE_MESSAGE,
