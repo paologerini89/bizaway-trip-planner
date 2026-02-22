@@ -32,7 +32,11 @@ export const SUPPORTED_PLACES = [
 const IATA_CODES = Type.Union(SUPPORTED_PLACES.map(code => Type.Literal(code)));
 
 export function isValidPlaceCode(code: string): boolean {
-  return IATA_CODE_REGEX.test(code.toUpperCase()) && SUPPORTED_PLACES.includes(code.toUpperCase());
+  if (!code || typeof code !== 'string') {
+    return false;
+  }
+  const upperCaseCode = code.toUpperCase();
+  return IATA_CODE_REGEX.test(upperCaseCode) && SUPPORTED_PLACES.includes(upperCaseCode);
 }
 
 export const PlaceCodeSchema = IATA_CODES;

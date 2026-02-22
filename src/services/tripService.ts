@@ -5,7 +5,7 @@ export class TripService {
 	private readonly apiUrl: string;
 	private readonly apiKey: string;
 
-	constructor(apiUrl: string = process.env.TRIPS_API_ENDPOINT || '', apiKey: string = process.env.TRIPS_API_KEY || '') {
+	constructor(apiUrl: string | undefined = process.env.TRIPS_API_ENDPOINT, apiKey: string | undefined = process.env.TRIPS_API_KEY) {
 		if (!apiUrl) {
 			throw new Error('TRIPS_API_ENDPOINT environment variable is required');
 		}
@@ -32,7 +32,7 @@ export class TripService {
 		return response.data;
 	}
 
-	private sortTrips(trips: Trip[], sortBy: SortBy): Trip[] {
+	sortTrips(trips: Trip[], sortBy: SortBy): Trip[] {
 		const sortedTrips = [...trips];
 
 		switch (sortBy) {
