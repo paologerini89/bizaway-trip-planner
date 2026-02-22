@@ -5,6 +5,7 @@ import { tripRoutes } from './routes/trips';
 import { tripManagerRoutes } from './routes/tripManager';
 import { TripService } from './services/tripService';
 import { TripStore } from './services/tripStore';
+import { CacheFactory } from './services/cache';
 import { buildErrorResponse, INTERNAL_SERVER_ERROR_CODE, SERVICE_UNAVAILABLE_CODE } from './utils/errors';
 
 config();
@@ -52,17 +53,39 @@ if (!apiKey) {
 	process.exit(1);
 }
 
-const tripService = new TripService(apiUrl, apiKey);
+// Initialize cache system
+const cacheService = CacheFactory.fromEnvironment();
+fastify.log.info(`Cache initialized: ${process.env.CACHE_TYPE || 'memory'}`);
+
+const tripService = new TripService(apiUrl, apiKey, cacheService);
 const tripStore = new TripStore();
 
 // Health check endpoint
 fastify.get('/health', async (request, reply) => {
+	const cacheConnected = await cacheService.isConnected();
+	
 	return {
 		status: 'ok',
 		timestamp: new Date().toISOString(),
 		version: '1.0.0',
 		uptime: process.uptime(),
-		environment: process.env.NODE_ENV || 'development'
+		environment: process.env.NODE_ENV || 'development',
+		cache: {
+			type: process.env.CACHE_TYPE || 'memory',
+			connected: cacheConnected
+		}
+	};
+});
+
+// Cache stats endpoint
+fastify.get('/cache/stats', async (request, reply) => {
+	const connected = await cacheService.isConnected();
+	
+	return {
+		type: process.env.CACHE_TYPE || 'memory',
+		connected,
+		ttl_seconds: parseInt(process.env.CACHE_TTL_SECONDS || '300'),
+		timestamp: new Date().toISOString()
 	};
 });
 
