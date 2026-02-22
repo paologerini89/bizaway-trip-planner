@@ -42,6 +42,28 @@ The API includes intelligent caching to improve performance:
 
 Set `CACHE_TYPE=redis` and configure Redis connection for production use.
 
+### Rate Limiting
+
+The API includes built-in rate limiting to prevent abuse and ensure fair usage:
+
+- **Default Limit**: 100 requests per minute per IP
+- **Configurable**: Adjust limits via environment variables
+- **Headers**: Provides rate limit status in response headers
+- **Smart Error Handling**: Clear error messages with retry information
+
+Configuration:
+```env
+RATE_LIMIT_MAX=100        # Max requests per time window  
+RATE_LIMIT_WINDOW=1 minute    # Time window (1 minute, 1 hour, etc.)
+```
+
+Rate limit headers in responses:
+```http
+X-RateLimit-Limit: 100
+X-RateLimit-Remaining: 95
+X-RateLimit-Reset: 1645518234
+```
+
 ## Build
 
 Compile TypeScript to JavaScript:
@@ -113,6 +135,30 @@ GET /trips/{id}
 ### Delete trip
 ```
 DELETE /trips/{id}
+```
+
+### Monitoring
+```
+GET /health
+GET /cache/stats  
+```
+
+## Response Headers
+
+All API responses include rate limiting information:
+
+```http
+X-RateLimit-Limit: 100         # Maximum requests allowed
+X-RateLimit-Remaining: 95       # Requests remaining in current window  
+X-RateLimit-Reset: 1645518234   # Unix timestamp when limit resets
+```
+
+When rate limit is exceeded (HTTP 429):
+```json
+{
+  "code": 429,
+  "message": "Rate limit exceeded. Max 100 requests per 1 minute. Try again in 45 seconds."
+}
 ```
 
 To verify the build was successful:

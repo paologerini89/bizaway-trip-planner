@@ -42,7 +42,7 @@ export async function tripManagerRoutes(fastify: FastifyInstance, options: TripM
 			body: SaveTripDBRequestSchema,
 			response: {
 				...GenericErrorResponseSchemas,
-				201: SaveTripDBResponseSchema,
+				[CREATED_CODE]: SaveTripDBResponseSchema,
 			}
 		}
 	}, async (request: FastifyRequest<{ Body: SaveTripDBRequest }>, reply: FastifyReply) => {
@@ -67,7 +67,7 @@ export async function tripManagerRoutes(fastify: FastifyInstance, options: TripM
 		schema: {
 			response: {
 				...GenericErrorResponseSchemas,
-				200: TripsDBListResponseSchema
+				[OK_CODE]: TripsDBListResponseSchema
 			}
 		}
 	}, async (request: FastifyRequest, reply: FastifyReply) => {
@@ -99,7 +99,7 @@ export async function tripManagerRoutes(fastify: FastifyInstance, options: TripM
 			},
 			response: {
 				...GenericErrorResponseSchemas,
-				200: DeleteTripDBResponseSchema
+				[OK_CODE]: DeleteTripDBResponseSchema
 			}
 		}
 	}, async (request: FastifyRequest<{ Params: DeleteTripDBParams }>, reply: FastifyReply) => {
@@ -137,7 +137,7 @@ export async function tripManagerRoutes(fastify: FastifyInstance, options: TripM
 			},
 			response: {
 				...GenericErrorResponseSchemas,
-				200: GetTripDBResponseSchema,
+				[OK_CODE]: GetTripDBResponseSchema,
 			}
 		}
 	}, async (request: FastifyRequest<{ Params: GetTripDBParams }>, reply: FastifyReply) => {

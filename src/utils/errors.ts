@@ -14,6 +14,10 @@ export const CONFLICT_CODE = 409;
 export const CONFLICT_CODE_MESSAGE = 'Conflict';
 export const CONFLICT_ERROR_MESSAGE = 'The resource already exists';
 
+export const RATE_LIMIT_EXCEEDED_CODE = 429;
+export const RATE_LIMIT_EXCEEDED_CODE_MESSAGE = 'Too Many Requests';
+export const RATE_LIMIT_EXCEEDED_ERROR_MESSAGE = 'Rate limit exceeded. Please try again later.';
+
 export const INTERNAL_SERVER_ERROR_CODE = 500;
 export const INTERNAL_SERVER_ERROR_CODE_MESSAGE = 'Internal Server Error';
 export const INTERNAL_SERVER_ERROR_ERROR_MESSAGE = 'An unexpected error occurred';
@@ -41,6 +45,10 @@ const errors: Record<number, { error: string; message: string }> = {
     [CONFLICT_CODE]: {
         error: CONFLICT_CODE_MESSAGE,
         message: CONFLICT_ERROR_MESSAGE
+    },
+    [RATE_LIMIT_EXCEEDED_CODE]: {
+        error: RATE_LIMIT_EXCEEDED_CODE_MESSAGE,
+        message: RATE_LIMIT_EXCEEDED_ERROR_MESSAGE
     },
     [INTERNAL_SERVER_ERROR_CODE]: {
         error: INTERNAL_SERVER_ERROR_CODE_MESSAGE,
