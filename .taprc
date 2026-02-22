@@ -1,0 +1,4 @@
+files:
+  - "test/**/*.test.ts"
+  - "test/**/*.test.js"
+timeout: 30
