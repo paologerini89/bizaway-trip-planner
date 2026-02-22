@@ -22,9 +22,25 @@ HOST=0.0.0.0
 NODE_ENV=development
 TRIPS_API_ENDPOINT=https://z0qw1e7jpd.execute-api.eu-west-1.amazonaws.com/default/trips
 TRIPS_API_KEY=your-api-key-here
+
+# Cache Configuration (optional)
+CACHE_TYPE=memory
+CACHE_TTL_SECONDS=300
+
+# Redis Configuration (only if CACHE_TYPE=redis)
+REDIS_URL=redis://localhost:6379
 ```
 
 Replace `your-api-key-here` with your actual API key.
+
+### Cache Configuration
+
+The API includes intelligent caching to improve performance:
+
+- **Memory Cache** (default): Fast in-memory caching for development
+- **Redis Cache**: Production-ready distributed caching
+
+Set `CACHE_TYPE=redis` and configure Redis connection for production use.
 
 ## Build
 

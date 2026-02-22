@@ -1,5 +1,25 @@
 import { test } from 'tap';
 
+// Mock per CacheService
+const mockCacheService = {
+    cache: new Map(),
+    async get(key: string) {
+        return this.cache.get(key) || null;
+    },
+    async set(key: string, value: any, ttl?: number) {
+        this.cache.set(key, value);
+    },
+    async delete(key: string) {
+        this.cache.delete(key);
+    },
+    async clear() {
+        this.cache.clear();
+    },
+    async isConnected() {
+        return true;
+    }
+};
+
 // Mock axios completamente
 const mockGet = async (url: string, config: any) => {
     return { 
@@ -26,7 +46,6 @@ const mockGet = async (url: string, config: any) => {
     };
 };
 
-// Override del modulo axios
 const Module = require('module');
 const originalRequire = Module.prototype.require;
 Module.prototype.require = function(id: string) {
@@ -36,55 +55,58 @@ Module.prototype.require = function(id: string) {
     return originalRequire.apply(this, arguments);
 };
 
-// Ora importa TripService dopo aver impostato il mock
 const { TripService } = require('../src/services/tripService');
 
 test('TripService constructor', async (t) => {
     t.test('should throw error if apiUrl is missing', async (t) => {
         t.throws(() => {
-            new TripService('', 'test-key');
-        }, 
-        /TRIPS_API_ENDPOINT environment variable is required/);
+        new TripService('', 'test-key', mockCacheService);
+        }, /TRIPS_API_ENDPOINT environment variable is required/);
     });
 
     t.test('should throw error if apiKey is missing', async (t) => {
         t.throws(() => {
-            new TripService('http://test.com', '');
-        }, 
-        /TRIPS_API_KEY environment variable is required/);
+        new TripService('http://test.com', '', mockCacheService);
+        }, /TRIPS_API_KEY environment variable is required/);
     });
 
     t.test('should create instance with valid parameters', async (t) => {
-        const service = new TripService('http://test.com', 'test-key');
+        const service = new TripService('http://test.com', 'test-key', mockCacheService);
         t.type(service, TripService);
     });
 });
 
 test('TripService searchTrips', async (t) => {
-  const service = new TripService('http://test.com', 'test-key');
-  const result = await service.searchTrips('ATL', 'BOS', 'cheapest');
+    const service = new TripService('http://test.com', 'test-key', mockCacheService);
+    
+    // Reset cache prima del test
+    await mockCacheService.clear();
+    
+    const result = await service.searchTrips('ATL', 'BOS', 'cheapest');
 
-  t.equal(result.length, 2, 'should return correct number of trips');
-  t.equal(result[0].cost, 100, 'should sort by cheapest first');
-  t.equal(result[1].cost, 200, 'should sort properly');
+    t.equal(result.length, 2, 'should return correct number of trips');
+    t.equal(result[0].cost, 100, 'should sort by cheapest first');
+    t.equal(result[1].cost, 200, 'should sort properly');
 });
 
 test('TripService sorting', async (t) => {
-    const service = new TripService('http://test.com', 'test-key');
+    const service = new TripService('http://test.com', 'test-key', mockCacheService);
 
     t.test('should sort by fastest', async (t) => {
+        await mockCacheService.clear();
         const result = await service.searchTrips('ATL', 'BOS', 'fastest');
         t.equal(result[0].duration, 120, 'fastest trip should be first');
     });
 
     t.test('should sort by cheapest', async (t) => {
+        await mockCacheService.clear();
         const result = await service.searchTrips('ATL', 'BOS', 'cheapest');
         t.equal(result[0].cost, 100, 'cheapest trip should be first');
     });
 });
 
 test('TripService sortTrips method', async (t) => {
-    const service = new TripService('http://test.com', 'test-key');
+    const service = new TripService('http://test.com', 'test-key', mockCacheService);
     const trips = [
         { id: 'trip-1', origin: 'ATL', destination: 'BOS', cost: 100, duration: 180, type: 'car', display_name: 'Car from ATL to BOS' },
         { id: 'trip-2', origin: 'ATL', destination: 'BOS', cost: 200, duration: 120, type: 'flight', display_name: 'Flight from ATL to BOS' }
