@@ -187,10 +187,10 @@ npm run test:coverage
 
 ## API Endpoints
 
-### Trip Operations (🔒 Requires Authentication)
+### Trip Operations
 - `GET /trips/search` - Search trips with origin, destination, and sorting
 
-### Trip Manager (🔒 Requires Authentication)  
+### Trip Manager  
 - `POST /trips` - Save a trip to DB
 - `GET /trips` - List all trips from DB
 - `GET /trips/{id}` - Get a specific trip from DB
