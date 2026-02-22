@@ -5,6 +5,14 @@ import { v4 as uuidv4 } from 'uuid';
 export class TripStore {
     private tripsDB: Map<string, TripDB> = new Map();
 
+    /**
+     * 
+     * We pass the entire trip object instead of just the trip ID because we want to avoid making an additional API call to get the trip details when we save a trip in the DB. 
+     * This way, we can save the trip details directly in the DB without needing to fetch them again.
+     * Getting details from external API is not ideal because it can fail and it also adds latency to the save operation.
+     * If the trips were stored in a real database, we could just store the trip ID and then fetch the details when we need to display the saved trips. 
+     * But since we're using an in-memory store, we can just save the entire trip object to simplify the implementation.
+     */
     saveTripDB(trip: Trip): TripDB {
         // If the trip is already saved, return the existing trip instead of creating a new one
         // TODO: maybe we should return an error instead
