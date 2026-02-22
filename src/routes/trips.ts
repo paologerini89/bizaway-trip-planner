@@ -32,7 +32,7 @@ export async function tripRoutes(fastify: FastifyInstance, options: TripRouteOpt
             querystring: SearchRequestSchema,
             response: {
                 ...GenericErrorResponseSchemas,
-                200: SearchResponseSchema,
+                [OK_CODE]: SearchResponseSchema,
             }
         }
     }, async (request: FastifyRequest<{ Querystring: SearchRequest }>, reply: FastifyReply) => {

@@ -15,7 +15,13 @@ import {
     INTERNAL_SERVER_ERROR_CODE,
     INTERNAL_SERVER_ERROR_CODE_MESSAGE,
     INTERNAL_SERVER_ERROR_ERROR_MESSAGE,
-    buildErrorResponse
+    buildErrorResponse,
+    RATE_LIMIT_EXCEEDED_ERROR_MESSAGE,
+    RATE_LIMIT_EXCEEDED_CODE_MESSAGE,
+    RATE_LIMIT_EXCEEDED_CODE,
+    SERVICE_UNAVAILABLE_ERROR_MESSAGE,
+    SERVICE_UNAVAILABLE_CODE_MESSAGE,
+    SERVICE_UNAVAILABLE_CODE
 } from '../src/utils/errors';
 
 test('Error constants', async (t) => {
@@ -43,10 +49,22 @@ test('Error constants', async (t) => {
         t.equal(CONFLICT_ERROR_MESSAGE, 'The resource already exists', 'should have correct error message');
     });
 
+    t.test('Rate Limit Exceeded errors', async (t) => {
+        t.equal(RATE_LIMIT_EXCEEDED_CODE, 429, 'should have correct status code');
+        t.equal(RATE_LIMIT_EXCEEDED_CODE_MESSAGE, 'Too Many Requests', 'should have correct message');
+        t.equal(RATE_LIMIT_EXCEEDED_ERROR_MESSAGE, 'Rate limit exceeded. Please try again later.', 'should have correct error message');
+    });
+
     t.test('Internal Server Error', async (t) => {
         t.equal(INTERNAL_SERVER_ERROR_CODE, 500, 'should have correct status code');
         t.equal(INTERNAL_SERVER_ERROR_CODE_MESSAGE, 'Internal Server Error', 'should have correct message');
         t.equal(INTERNAL_SERVER_ERROR_ERROR_MESSAGE, 'An unexpected error occurred', 'should have correct error message');
+    });
+
+    t.test('Service Unavailable Error', async (t) => {
+        t.equal(SERVICE_UNAVAILABLE_CODE, 503, 'should have correct status code');
+        t.equal(SERVICE_UNAVAILABLE_CODE_MESSAGE, 'Service Unavailable', 'should have correct message');
+        t.equal(SERVICE_UNAVAILABLE_ERROR_MESSAGE, 'Unable to reach the API', 'should have correct error message');
     });
 });
 
