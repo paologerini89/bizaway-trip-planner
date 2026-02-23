@@ -12,6 +12,7 @@ export class TripStore {
      * Getting details from external API is not ideal because it can fail and it also adds latency to the save operation.
      * If the trips were stored in a real database, we could just store the trip ID and then fetch the details when we need to display the saved trips. 
      * But since we're using an in-memory store, we can just save the entire trip object to simplify the implementation.
+     * To emulate a real database, we generate a unique ID for each saved trip and store the original trip ID as a separate field (trip_id) in the TripDB object.
      */
     saveTripDB(trip: Trip): TripDB {
         // If the trip is already saved, return the existing trip instead of creating a new one

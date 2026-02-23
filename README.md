@@ -2,6 +2,17 @@
 
 REST API for searching and managing trips built with Node.js and TypeScript.
 
+In the trip manager part, to emulate a real DB using resources from an external source, I decided to
+use the entire trip object and to save it generating a new id for the "row", converting the trip "id" value
+in the new "trip_id" attribute.
+
+There is also an implementend authentication logic with the auth middleware, but it checks only if the Authorization
+header exists and it's in the "Bearer token" format
+
+Plus:
+- Caching logic with redis, to store the results from the external API for a while
+- Rate limit control
+
 ## Installation
 
 Clone the repository and install dependencies:
