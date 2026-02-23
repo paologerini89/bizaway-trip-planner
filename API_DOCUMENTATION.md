@@ -4,7 +4,8 @@ Base URL: `http://localhost:3000`
 
 ## Authentication
 
-Implemented, but not active (Authorization header)
+Just put a non-empty Bearer token in Authorization header
+example: Bearer 123-test-token
 
 ## Endpoints
 
